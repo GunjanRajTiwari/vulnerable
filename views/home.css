@@ -1,0 +1,14 @@
+body {
+	background-color: rgb(218, 210, 255);
+}
+
+h1 {
+	text-align: center;
+	color: rgb(58, 11, 168);
+}
+
+.notice {
+	margin: 1em;
+	padding: 2em;
+	background-color: rgb(191, 173, 255);
+}
