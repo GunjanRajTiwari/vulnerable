@@ -2,6 +2,7 @@ const express = require("express");
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static("views"));
 
 // Database connection
 const { Client } = require("pg");
@@ -19,8 +20,11 @@ db.connect();
 //Transfer coin
 async function transferCoin(from, to, amount) {
 	try {
-		await db.query(begin);
+		await db.query("begin");
 		const text = "update profile set coin=coin+$1 where id = '$2'";
+		await db.query(text, [amount, to]);
+		await db.query(text, [-amount, from]);
+		await db.query("commit");
 	} catch (e) {
 		await db.query("rollback");
 		console.log(e);
@@ -29,7 +33,7 @@ async function transferCoin(from, to, amount) {
 
 // Routes
 app.get("/", (req, res) => {
-	res.send("Success");
+	res.sendFile(__dirname + "/views/login.html");
 });
 
 app.get("/:id", async (req, res) => {
@@ -37,20 +41,42 @@ app.get("/:id", async (req, res) => {
 	try {
 		// Wrong way
 		const data = await db.query(
-			`select name, email, coin from profile where email = '${id}'`
+			`select id, name, email, coin from profile where id = ${id}`
 		);
 
 		// Right Way
 		// const data = await db.query(
-		// 	`select name, email, coin from profile where email = $1`,
+		// 	`select id, name, email, coin from profile where id = $1`,
 		// 	[id]
 		// );
-		res.json(data);
+		res.json(data.rows);
 	} catch (e) {
 		res.json({ error: e });
 	}
 });
 
-app.post("/login");
+app.post("/login", async (req, res) => {
+	const { email, password } = req.body;
+	console.log(req.body);
+	if (!email) {
+		res.json({ error: "Invalid email" });
+	}
+	if (!password) {
+		res.json({ error: "Invalid password" });
+	}
 
-app.listen(8000);
+	try {
+		const text = "select password from profile where email = $1";
+		const response = await db.query(text, [email]);
+		const actualPassword = response.rows[0].password;
+		if (password == actualPassword) {
+			return res.json({ authenticated: true });
+		}
+		console.log(actualPassword);
+		res.json({ error: "Invalid Credentials" });
+	} catch (e) {
+		res.json({ error: e });
+	}
+});
+
+app.listen(8000, () => console.log("Running at port 8000 ..."));
