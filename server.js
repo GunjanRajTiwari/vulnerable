@@ -93,12 +93,12 @@ app.post("/sendCoins", authenticate, async (req, res) => {
 	res.send();
 });
 
-app.get("/:id", async (req, res) => {
+app.get("/profile/:id", async (req, res) => {
 	const id = req.params.id;
 	try {
 		// Wrong way
 		const data = await db.query(
-			`select id, name, email, password, coin from profile where id = ${id}`
+			`select id, name, email, coin from profile where id = ${id}`
 		);
 
 		// Right Way

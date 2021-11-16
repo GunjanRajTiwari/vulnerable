@@ -15,8 +15,8 @@ insert into profile values(
 );
 insert into profile values(
     default,
-    'Murli S',
-    'murli.s@gmail.com',
-    'murli123',
+    'Elon Musk',
+    'elon.m@gmail.com',
+    'elon123',
     default
 );
