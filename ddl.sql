@@ -20,3 +20,5 @@ insert into profile values(
     'elon123',
     default
 );
+
+update profile set coin=coin+10 where id = 1;

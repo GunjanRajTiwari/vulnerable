@@ -90,7 +90,7 @@ app.post("/login", async (req, res) => {
 
 app.post("/sendCoins", authenticate, async (req, res) => {
 	await transferCoin(req.session.authUser, req.body.to, req.body.amount);
-	res.send();
+	res.send(`${req.body.amount} coins sent successfully.`);
 });
 
 app.get("/profile/:id", async (req, res) => {
