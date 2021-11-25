@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/home.css" />
+		<title>Transfer</title>
+	</head>
+	<body>
+		<nav>
+			<div class="brand">MALCOIN</div>
+			<div class="navigation">
+				<a href="/" class="nav-link">Feed</a>
+				<a href="/profile/<%=authUser%>" class="nav-link">Profile</a>
+				<a href="/transfer" class="nav-link highlight">Transfer</a>
+			</div>
+		</nav>
+		<div class="container">
+			<h1>Transfer MALCOIN</h1>
+			<form method="POST" action="/sendCoins" class="form">
+				<input type="number" name="to" placeholder="Reciever id">
+				<input type="number" name="amount" placeholder="Amount">
+                <button type="submit" class="highlight button">Send </button>
+			</div>
+		</div>
+	</body>
+</html>

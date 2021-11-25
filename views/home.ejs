@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/home.css" />
+		<title>Home</title>
+	</head>
+	<body>
+		<nav>
+			<div class="brand">MALCOIN</div>
+			<div class="navigation">
+				<a href="/" class="nav-link">Feed</a>
+				<a href="/profile/<%=authUser%>" class="nav-link">Profile</a>
+				<a href="/transfer" class="nav-link highlight">Transfer</a>
+			</div>
+		</nav>
+		<div class="container">
+			<h1>News Feed</h1>
+			<div class="new-post">
+				<textarea
+					placeholder="What's New"
+					name="content"
+					id="content"
+					rows="6"
+				></textarea>
+				<button id="post" class="button highlight">Post</button>
+			</div>
+			<div class="notice">
+				I am a cat lover.<a href="http://localhost:5500/malicious.html"
+					>Click here</a
+				>
+				to see my cat.
+			</div>
+
+            <% for(var i = 0; i<postCount; ++i){ %>
+            <div class="notice">
+                <p class="post"><%= posts[i].content %></p>
+                <span class="author"> - <%= posts[i].name %> </span>
+            </div>
+            <% } %>
+
+		</div>
+        <script src="/post.js"> </script>
+	</body>
+</html>

@@ -1,11 +1,16 @@
 const express = require("express");
 const session = require("express-session");
+const csrf = require("csurf");
 
 const app = express();
 const sessions = {};
 
+app.set("view engine", "ejs");
+app.use(express.static("public"));
+
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static("views"));
 app.use(
 	session({
@@ -14,6 +19,7 @@ app.use(
 		saveUninitialized: false,
 	})
 );
+const csrfProtection = csrf({ cookie: true });
 
 // Custom middleware
 function authenticate(req, res, next) {
@@ -53,12 +59,26 @@ async function transferCoin(from, to, amount) {
 }
 
 // Routes
-app.get("/login", (req, res) => {
-	res.sendFile(__dirname + "/views/login.html");
+// ---------- Homepage ------------
+app.get("/", authenticate, async (req, res) => {
+	try {
+		const posts = await db.query(
+			"select profile.name, post.id, post.content from profile inner join post on profile.id = post.author order by post.id desc"
+		);
+		res.render("home.ejs", {
+			authUser: req.session.authUser,
+			postCount: posts.rowCount,
+			posts: posts.rows,
+		});
+	} catch (e) {
+		res.send(e);
+	}
 });
 
-app.get("/", authenticate, (req, res) => {
-	res.sendFile(__dirname + "/views/home.html");
+// ---------- Authentication routes ----------
+
+app.get("/login", (req, res) => {
+	res.sendFile(__dirname + "/views/login.html");
 });
 
 app.post("/login", async (req, res) => {
@@ -88,10 +108,30 @@ app.post("/login", async (req, res) => {
 	}
 });
 
-app.post("/sendCoins", authenticate, async (req, res) => {
-	await transferCoin(req.session.authUser, req.body.to, req.body.amount);
-	res.send(`${req.body.amount} coins sent successfully.`);
+// ---------------- Coin transaction ----------------
+
+app.get("/transfer", authenticate, (req, res) => {
+	res.render('transfer.ejs', {authUser: req.session.authUser});
 });
+
+// Wrong way
+app.post("/sendCoins", authenticate, async (req, res) => {
+    try {
+
+        await transferCoin(req.session.authUser, req.body.to, req.body.amount);
+        res.red('/profile/'+req.session.authUser);
+    } catch(e) {
+    	res.json({ error: e });
+	}
+});
+
+// Right way
+// app.post("/sendCoins", authenticate, async (req, res) => {
+// 	await transferCoin(req.session.authUser, req.body.to, req.body.amount);
+// 	res.send(`${req.body.amount} coins sent successfully.`);
+// });
+
+// ---------------- Profile ------------------
 
 app.get("/profile/:id", async (req, res) => {
 	const id = req.params.id;
@@ -106,9 +146,25 @@ app.get("/profile/:id", async (req, res) => {
 		// 	`select id, name, email, coin from profile where id = $1`,
 		// 	[id]
 		// );
-		res.json(data.rows);
+		res.render("profile.ejs", {
+			authUser: req.session.authUser,
+			profile: data.rows[0],
+		});
 	} catch (e) {
 		res.json({ error: e });
+	}
+});
+
+// ------------ New Post -------------
+
+app.post("/post", authenticate, async (req, res) => {
+	try {
+		var query = "insert into post values(default, $1, $2)";
+		await db.query(query, [req.body.content, req.session.authUser]);
+		res.status(201).send("ok");
+	} catch (e) {
+		console.log(e);
+		res.status(500).send(e);
 	}
 });
 

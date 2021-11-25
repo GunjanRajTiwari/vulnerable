@@ -6,6 +6,12 @@ create table profile(
     coin int default 100
 );
 
+create table post(
+    id serial primary key,
+    content text not null,
+    author int not null
+);
+
 insert into profile values(
     default,
     'Gunjan Raj Tiwari',

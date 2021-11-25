@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/home.css" />
+		<title>Profile</title>
+	</head>
+	<body>
+		<nav>
+			<div class="brand">MALCOIN</div>
+			<div class="navigation">
+				<a href="/" class="nav-link">Feed</a>
+				<a href="/profile/<%=authUser%>" class="nav-link">Profile</a>
+				<a href="/transfer" class="nav-link highlight">Transfer</a>
+			</div>
+		</nav>
+		<div class="container">
+			<h1>Profile</h1>
+			<div class="profile">
+				<img
+					class="avatar"
+					src="https://avatars.dicebear.com/api/initials/<%=profile.name%>.svg"
+					alt="You"
+				/>
+				<p class="name"><%= profile.name %></p>
+				<p class="balance">
+					Balance: <span> <%= profile.coin %> </span> <span class="malcoin">M</span>
+				</p>
+			</div>
+		</div>
+	</body>
+</html>
