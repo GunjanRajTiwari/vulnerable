@@ -36,7 +36,7 @@
 
             <% for(var i = 0; i<postCount; ++i){ %>
             <div class="notice">
-                <p class="post"><%= posts[i].content %></p>
+                <p class="post"><%- posts[i].content %></p>
                 <span class="author"> - <%= posts[i].name %> </span>
             </div>
             <% } %>

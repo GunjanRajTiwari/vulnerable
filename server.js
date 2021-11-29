@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require('cookie-parser');
 const session = require("express-session");
 const csrf = require("csurf");
 
@@ -12,6 +13,7 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("views"));
+app.use(cookieParser())
 app.use(
 	session({
 		secret: "Session Secret",
@@ -109,26 +111,32 @@ app.post("/login", async (req, res) => {
 });
 
 // ---------------- Coin transaction ----------------
-
+// Wrong way
 app.get("/transfer", authenticate, (req, res) => {
-	res.render('transfer.ejs', {authUser: req.session.authUser});
+	res.render('transfer.ejs', {authUser: req.session.authUser, csrfToken:""});
 });
 
-// Wrong way
 app.post("/sendCoins", authenticate, async (req, res) => {
     try {
-
         await transferCoin(req.session.authUser, req.body.to, req.body.amount);
-        res.red('/profile/'+req.session.authUser);
+        res.redirect('/profile/'+req.session.authUser);
     } catch(e) {
     	res.json({ error: e });
 	}
 });
 
 // Right way
-// app.post("/sendCoins", authenticate, async (req, res) => {
-// 	await transferCoin(req.session.authUser, req.body.to, req.body.amount);
-// 	res.send(`${req.body.amount} coins sent successfully.`);
+// app.get("/transfer", authenticate, csrfProtection, (req, res) => {
+// 	res.render('transfer.ejs', {authUser: req.session.authUser, csrfToken: req.csrfToken()});
+// });
+
+// app.post("/sendCoins", authenticate, csrfProtection, async (req, res) => {
+//     try {
+//         await transferCoin(req.session.authUser, req.body.to, req.body.amount);
+//         res.redirect('/profile/'+req.session.authUser);
+//     } catch(e) {
+//     	res.json({ error: e });
+// 	}
 // });
 
 // ---------------- Profile ------------------
@@ -161,7 +169,7 @@ app.post("/post", authenticate, async (req, res) => {
 	try {
 		var query = "insert into post values(default, $1, $2)";
 		await db.query(query, [req.body.content, req.session.authUser]);
-		res.status(201).send("ok");
+		res.status(201).send();
 	} catch (e) {
 		console.log(e);
 		res.status(500).send(e);

@@ -21,6 +21,7 @@
 			<form method="POST" action="/sendCoins" class="form">
 				<input type="number" name="to" placeholder="Reciever id">
 				<input type="number" name="amount" placeholder="Amount">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                 <button type="submit" class="highlight button">Send </button>
 			</div>
 		</div>
